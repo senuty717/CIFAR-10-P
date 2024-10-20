@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
@@ -126,6 +126,10 @@
 
         // Función para hacer predicciones
         function predecir() {
+            if (!modelo || !modelo2 || !modelo3 || !modelo4) {
+                console.error("Modelos no cargados correctamente. Por favor, espera a que se carguen.");
+                return;
+            }
             // Cambiar el tamaño de la imagen a 32x32 para la predicción
             resample_single(canvas, 32, 32, smallcanvas);
             var imgData = ctx2.getImageData(0, 0, 32, 32);
@@ -139,7 +143,7 @@
                 }
             }
             arr = [arr]; // Añadir una dimensión adicional para el tensor
-            var tensor4 = tf.tensor4d(arr); // Crear tensor 4D a partir de los datos
+            var tensor4 = tf.tensor4d(arr, [1, 32, 32, 3]);
 
             // Hacer predicciones con cada modelo y mostrar los resultados
             var resultados = modelo.predict(tensor4).dataSync();
