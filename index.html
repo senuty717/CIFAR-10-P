@@ -177,15 +177,30 @@ window.onload = async function () {
 
     try {
         modelo = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_1.json');
-        console.log("Modelo 1 cargado correctamente", modelo);
-        modelo2 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json');
-        console.log("Modelo 2 cargado correctamente", modelo2);
-        modelo3 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json');
-        console.log("Modelo 3 cargado correctamente", modelo3);
-        modelo4 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json');
-        console.log("Modelo 4 cargado correctamente", modelo4);
+        console.log("Modelo 1 cargado correctamente");
     } catch (error) {
-        console.error("Error cargando los modelos:", error);
+        console.error("Error cargando Modelo 1:", error);
+    }
+
+    try {
+        modelo2 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json');
+        console.log("Modelo 2 cargado correctamente");
+    } catch (error) {
+        console.error("Error cargando Modelo 2:", error);
+    }
+
+    try {
+        modelo3 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json');
+        console.log("Modelo 3 cargado correctamente");
+    } catch (error) {
+        console.error("Error cargando Modelo 3:", error);
+    }
+
+    try {
+        modelo4 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json');
+        console.log("Modelo 4 cargado correctamente");
+    } catch (error) {
+        console.error("Error cargando Modelo 4:", error);
     }
 };
 
