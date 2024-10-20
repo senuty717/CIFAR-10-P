@@ -67,10 +67,18 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><div id="resultado" class="resultado"></div></td>
-                        <td><div id="resultado2" class="resultado"></div></td>
-                        <td><div id="resultado3" class="resultado"></div></td>
-                        <td><div id="resultado4" class="resultado"></div></td>
+                        <td>
+                            <div id="resultado" class="resultado"></div>
+                        </td>
+                        <td>
+                            <div id="resultado2" class="resultado"></div>
+                        </td>
+                        <td>
+                            <div id="resultado3" class="resultado"></div>
+                        </td>
+                        <td>
+                            <div id="resultado4" class="resultado"></div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -92,7 +100,10 @@
 
     <script type="text/javascript">
         // Variables para almacenar los modelos de TensorFlow
-        var modelo1, modelo2, modelo3, modelo4;
+        var modelo = null;
+        var modelo2 = null;
+        var modelo3 = null;
+        var modelo4 = null;
 
         // Configuración de los lienzos
         var canvas = document.getElementById("bigcanvas");
@@ -105,81 +116,87 @@
             ctx1.clearRect(0, 0, canvas.width, canvas.height); // Limpiar el canvas
             ctx1.fillStyle = "white"; // Establecer color de fondo a blanco
             ctx1.fillRect(0, 0, canvas.width, canvas.height); // Dibujar el rectángulo blanco
+            drawingcanvas.clear(); // Limpiar el canvas de dibujo (si es necesario)
         }
 
-        // Función para cambiar el tamaño de la imagen
-        function resample_single(sourceCanvas, width, height, targetCanvas) {
-            var context = targetCanvas.getContext('2d');
-            context.drawImage(sourceCanvas, 0, 0, width, height);
-        }
+        function resample_single(canvas, width, height, targetCanvas) {
+    var context = targetCanvas.getContext('2d');
+    context.drawImage(canvas, 0, 0, width, height);
+}
 
         // Función para hacer predicciones
-        async function predecir() {
-            if (!modelo1 || !modelo2 || !modelo3 || !modelo4) {
+        function predecir() {
+            if (!modelo || !modelo2 || !modelo3 || !modelo4) {
                 console.error("Modelos no cargados correctamente. Por favor, espera a que se carguen.");
                 return;
             }
-
             // Cambiar el tamaño de la imagen a 32x32 para la predicción
             resample_single(canvas, 32, 32, smallcanvas);
             var imgData = ctx2.getImageData(0, 0, 32, 32);
             var arr = [];
-            for (var p = 0; p < imgData.data.length; p += 4) {
-                // Convertir a rango [0, 1]
-                arr.push([imgData.data[p] / 255, imgData.data[p + 1] / 255, imgData.data[p + 2] / 255]);
+            var arr32 = [];
+            for (var p = 0, i = 0; p < imgData.data.length; p += 4) {
+                arr32.push([imgData.data[p] / 255, imgData.data[p + 1] / 255, imgData.data[p + 2] / 255]);
+                if (arr32.length == 32) {
+                    arr.push(arr32);
+                    arr32 = [];
+                }
             }
-
-            var tensor4 = tf.tensor4d(arr, [1, 32, 32, 3]); // Crear tensor
+            arr = [arr]; // Añadir una dimensión adicional para el tensor
+            var tensor4 = tf.tensor4d(arr, [1, 32, 32, 3]);
 
             // Hacer predicciones con cada modelo y mostrar los resultados
-            var resultados = modelo1.predict(tensor4).dataSync();
-            var mayorIndice = resultados.indexOf(Math.max(...resultados));
+            var resultados = modelo.predict(tensor4).dataSync();
+            var mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
             document.getElementById("resultado").innerHTML = mayorIndice;
 
             resultados = modelo2.predict(tensor4).dataSync();
-            mayorIndice = resultados.indexOf(Math.max(...resultados));
+            mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
             document.getElementById("resultado2").innerHTML = mayorIndice;
 
             resultados = modelo3.predict(tensor4).dataSync();
-            mayorIndice = resultados.indexOf(Math.max(...resultados));
+            mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
             document.getElementById("resultado3").innerHTML = mayorIndice;
 
             resultados = modelo4.predict(tensor4).dataSync();
-            mayorIndice = resultados.indexOf(Math.max(...resultados));
+            mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
             document.getElementById("resultado4").innerHTML = mayorIndice;
         }
 
+        // Función para establecer el fondo blanco al comenzar a dibujar
+        function iniciarDibujo() {
+            ctx1.fillStyle = "white"; // Establecer color de fondo a blanco
+            ctx1.fillRect(0, 0, canvas.width, canvas.height); // Dibujar el rectángulo blanco
+            // Aquí puedes agregar la lógica para iniciar el dibujo
+        }
+
         // Cargar los modelos de TensorFlow cuando la ventana se haya cargado
-        window.onload = async function () {
-            ctx1.fillStyle = "white";
-            ctx1.fillRect(0, 0, canvas.width, canvas.height);
+// Cargar los modelos de TensorFlow cuando la ventana se haya cargado
+window.onload = async function () {
+    ctx1.fillStyle = "white";
+    ctx1.fillRect(0, 0, canvas.width, canvas.height);
 
-            const modelUrls = [
-                'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model.json',
-                'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json',
-                'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json',
-                'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json'
-            ];
+    const modelUrls = [
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model.json',
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json',
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json',
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json'
+    ];
 
-            // Cargar los modelos
-            try {
-                modelo1 = await tf.loadLayersModel(modelUrls[0]);
-                console.log(`Modelo 1 cargado correctamente`);
-                modelo2 = await tf.loadLayersModel(modelUrls[1]);
-                console.log(`Modelo 2 cargado correctamente`);
-                modelo3 = await tf.loadLayersModel(modelUrls[2]);
-                console.log(`Modelo 3 cargado correctamente`);
-                modelo4 = await tf.loadLayersModel(modelUrls[3]);
-                console.log(`Modelo 4 cargado correctamente`);
-            } catch (error) {
-                console.error(`Error cargando los modelos:`, error);
-            }
-        };
+    const modelos = [modelo, modelo2, modelo3, modelo4];
 
+    for (let i = 0; i < modelUrls.length; i++) {
+        try {
+            modelos[i] = await tf.loadLayersModel(modelUrls[i]);
+            console.log(`Modelo ${i + 1} cargado correctamente`);
+        } catch (error) {
+            console.error(`Error cargando Modelo ${i + 1}:`, error);
+        }
+    }
+};
+        
         // Asignar el evento de inicio de dibujo al lienzo
-        canvas.addEventListener('mousedown', () => {
-            limpiar(); // Limpiar el lienzo al comenzar a dibujar
-        });
+        canvas.addEventListener('mousedown', iniciarDibujo);
     </script>
 </body>
 
