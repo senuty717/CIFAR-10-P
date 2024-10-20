@@ -171,40 +171,30 @@
         }
 
         // Cargar los modelos de TensorFlow cuando la ventana se haya cargado
+// Cargar los modelos de TensorFlow cuando la ventana se haya cargado
 window.onload = async function () {
     ctx1.fillStyle = "white";
     ctx1.fillRect(0, 0, canvas.width, canvas.height);
 
-    try {
-        modelo = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_1.json');
-        console.log("Modelo 1 cargado correctamente");
-    } catch (error) {
-        console.error("Error cargando Modelo 1:", error);
-    }
+    const modelUrls = [
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_1.json',
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json',
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json',
+        'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json'
+    ];
 
-    try {
-        modelo2 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json');
-        console.log("Modelo 2 cargado correctamente");
-    } catch (error) {
-        console.error("Error cargando Modelo 2:", error);
-    }
+    const modelos = [modelo, modelo2, modelo3, modelo4];
 
-    try {
-        modelo3 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json');
-        console.log("Modelo 3 cargado correctamente");
-    } catch (error) {
-        console.error("Error cargando Modelo 3:", error);
-    }
-
-    try {
-        modelo4 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json');
-        console.log("Modelo 4 cargado correctamente");
-    } catch (error) {
-        console.error("Error cargando Modelo 4:", error);
+    for (let i = 0; i < modelUrls.length; i++) {
+        try {
+            modelos[i] = await tf.loadLayersModel(modelUrls[i]);
+            console.log(`Modelo ${i + 1} cargado correctamente`);
+        } catch (error) {
+            console.error(`Error cargando Modelo ${i + 1}:`, error);
+        }
     }
 };
-
-
+        
         // Asignar el evento de inicio de dibujo al lienzo
         canvas.addEventListener('mousedown', iniciarDibujo);
     </script>
