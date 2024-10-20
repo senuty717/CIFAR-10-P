@@ -183,17 +183,24 @@
         'https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json'
     ];
 
-    const modelos = [modelo, modelo2, modelo3, modelo4];
+    try {
+        // Cargar los cuatro modelos
+        modelo = await tf.loadLayersModel(modelUrls[0]);
+        console.log("Modelo 1 cargado correctamente");
 
-    for (let i = 0; i < modelUrls.length; i++) {
-        try {
-            modelos[i] = await tf.loadLayersModel(modelUrls[i]);
-            console.log(`Modelo ${i + 1} cargado correctamente`);
-        } catch (error) {
-            console.error(`Error cargando Modelo ${i + 1}:`, error);
-        }
+        modelo2 = await tf.loadLayersModel(modelUrls[1]);
+        console.log("Modelo 2 cargado correctamente");
+
+        modelo3 = await tf.loadLayersModel(modelUrls[2]);
+        console.log("Modelo 3 cargado correctamente");
+
+        modelo4 = await tf.loadLayersModel(modelUrls[3]);
+        console.log("Modelo 4 cargado correctamente");
+    } catch (error) {
+        console.error("Error cargando los modelos:", error);
     }
 };
+
         
         // Asignar el evento de inicio de dibujo al lienzo
         canvas.addEventListener('mousedown', iniciarDibujo);
