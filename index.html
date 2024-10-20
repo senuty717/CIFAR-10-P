@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="21x31" href="favicon-21x31.png">
+    <link rel="icon" type="image/png" sizes="11x16" href="favicon-11x16.png">
+    <!-- Enlace al CSS -->
+    <link href="css.css" rel="stylesheet">
+    <title>CIFAR-10</title>
+
+    <!-- Enlace a Bootstrap para estilos predefinidos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <main>
+        <div class="main">
+            <!-- Logotipo de la aplicación -->
+            <img class="d-block mx-auto mb-2" src="LogotipoV2-Simple.png" alt="" width="50" height="75">
+            <h1 class="text-white">Imágenes de CIFAR-10</h1>
+            <p class="lead mb-0 text-white">Predicción de imágenes de CIFAR-10 utilizando Tensorflow.js.<br><br></p>
+
+            <div class="container-flex">
+                <!-- Lista de clases de imágenes CIFAR-10 -->
+                <div class="class-list">
+                    <h5 class="text-white">Clases de CIFAR-10:</h5>
+                    <ul class="list-unstyled text-white">
+                        <li>1. Avión</li>
+                        <li>2. Automóvil</li>
+                        <li>3. Pájaro</li>
+                        <li>4. Gato</li>
+                        <li>5. Ciervo</li>
+                        <li>6. Perro</li>
+                        <li>7. Rana</li>
+                        <li>8. Caballo</li>
+                        <li>9. Barco</li>
+                        <li>10. Camión</li>
+                    </ul>
+                </div>
+
+                <!-- Contenedor para los lienzos de dibujo -->
+                <div id="canvas-container">
+                    <i>Dibuja la imagen grande y centrada para tener una mejor predicción.</i>
+                    <canvas id="bigcanvas" width="320" height="320"></canvas>
+                    <canvas id="smallcanvas" width="32" height="32" style="display: none;"></canvas>
+                </div>
+            </div>
+
+            <!-- Botones para limpiar y predecir -->
+            <button class="btn btn-primary" id="limpiar" onclick="limpiar()"><b>Limpiar</b></button>
+            <button class="btn btn-success" id="predecir" onclick="predecir()"><b>Predecir</b></button>
+
+            <!-- Tabla para mostrar los resultados de las predicciones -->
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-white">Modelo 1 (Denso)</th>
+                        <th class="text-white">Modelo 2 (Conv)</th>
+                        <th class="text-white">Modelo 3 (AD+DO)</th>
+                        <th class="text-white">Modelo 4 (AD+DO) 200</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div id="resultado" class="resultado"></div>
+                        </td>
+                        <td>
+                            <div id="resultado2" class="resultado"></div>
+                        </td>
+                        <td>
+                            <div id="resultado3" class="resultado"></div>
+                        </td>
+                        <td>
+                            <div id="resultado4" class="resultado"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer con información del autor -->
+        <div class="bg-dark text-secondary text-center">
+            <h1 class="display-5 fw-bold text-white">Sergio Sánchez Luque</h1>
+        </div>
+    </main>
+
+    <!-- Enlace a Bootstrap y TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <script src="fabric.min.js"></script>
+    <script src="drawing.js"></script>
+
+    <script type="text/javascript">
+        // Variables para almacenar los modelos de TensorFlow
+        var modelo = null;
+        var modelo2 = null;
+        var modelo3 = null;
+        var modelo4 = null;
+
+        // Configuración de los lienzos
+        var canvas = document.getElementById("bigcanvas");
+        var ctx1 = canvas.getContext("2d");
+        var smallcanvas = document.getElementById("smallcanvas");
+        var ctx2 = smallcanvas.getContext("2d");
+
+        // Función para limpiar el lienzo
+        function limpiar() {
+            ctx1.clearRect(0, 0, canvas.width, canvas.height); // Limpiar el canvas
+            ctx1.fillStyle = "white"; // Establecer color de fondo a blanco
+            ctx1.fillRect(0, 0, canvas.width, canvas.height); // Dibujar el rectángulo blanco
+            drawingcanvas.clear(); // Limpiar el canvas de dibujo (si es necesario)
+        }
+
+        // Función para hacer predicciones
+        function predecir() {
+            // Cambiar el tamaño de la imagen a 32x32 para la predicción
+            resample_single(canvas, 32, 32, smallcanvas);
+            var imgData = ctx2.getImageData(0, 0, 32, 32);
+            var arr = [];
+            var arr32 = [];
+            for (var p = 0, i = 0; p < imgData.data.length; p += 4) {
+                arr32.push([imgData.data[p] / 255, imgData.data[p + 1] / 255, imgData.data[p + 2] / 255]);
+                if (arr32.length == 32) {
+                    arr.push(arr32);
+                    arr32 = [];
+                }
+            }
+            arr = [arr]; // Añadir una dimensión adicional para el tensor
+            var tensor4 = tf.tensor4d(arr); // Crear tensor 4D a partir de los datos
+
+            // Hacer predicciones con cada modelo y mostrar los resultados
+            var resultados = modelo.predict(tensor4).dataSync();
+            var mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
+            document.getElementById("resultado").innerHTML = mayorIndice;
+
+            resultados = modelo2.predict(tensor4).dataSync();
+            mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
+            document.getElementById("resultado2").innerHTML = mayorIndice;
+
+            resultados = modelo3.predict(tensor4).dataSync();
+            mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
+            document.getElementById("resultado3").innerHTML = mayorIndice;
+
+            resultados = modelo4.predict(tensor4).dataSync();
+            mayorIndice = resultados.indexOf(Math.max.apply(null, resultados));
+            document.getElementById("resultado4").innerHTML = mayorIndice;
+        }
+
+        // Función para establecer el fondo blanco al comenzar a dibujar
+        function iniciarDibujo() {
+            ctx1.fillStyle = "white"; // Establecer color de fondo a blanco
+            ctx1.fillRect(0, 0, canvas.width, canvas.height); // Dibujar el rectángulo blanco
+            // Aquí puedes agregar la lógica para iniciar el dibujo
+        }
+
+        // Cargar los modelos de TensorFlow cuando la ventana se haya cargado
+        window.onload = async function () {
+            // Establecer el fondo blanco al cargar
+            ctx1.fillStyle = "white"; // Establecer color de fondo a blanco
+            ctx1.fillRect(0, 0, canvas.width, canvas.height); // Dibujar el rectángulo blanco
+
+            // Cargar los modelos de TensorFlow
+            modelo = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_1.json');
+            modelo2 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_2.json');
+            modelo3 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_3.json');
+            modelo4 = await tf.loadLayersModel('https://raw.githubusercontent.com/senuty717/CIFAR-10-P/main/model_4.json');
+        };
+
+        // Asignar el evento de inicio de dibujo al lienzo
+        canvas.addEventListener('mousedown', iniciarDibujo);
+    </script>
+</body>
+
+</html>

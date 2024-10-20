@@ -1,0 +1,83 @@
+/* Estilo general del cuerpo */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Altura mínima para centrar el contenido */
+    font-family: 'Jost', sans-serif; /* Tipografía utilizada */
+    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); /* Degradado de fondo */
+    color: white; /* Color de texto blanco para todo el cuerpo */
+}
+
+/* Estilo para el contenedor principal */
+.main {
+    width: 800px; /* Aumentar el ancho para acomodar lista y canvas */
+    height: auto;
+    background: url("https://doc-08-2c-docs.googleusercontent.com/docs/securesc/68c90smiglihng9534mvqmq1946dmis5/fo0picsp1nhiucmc0l25s29respgpr4j/1631524275000/03522360960922298374/03522360960922298374/1Sx0jhdpEpnNIydS4rnN4kHSJtU1EyWka?e=view&authuser=0&nonce=gcrocepgbb17m&user=03522360960922298374&hash=tfhgbs86ka6divo3llbvp93mg4csvb38") no-repeat center/cover; /* Fondo del contenedor */
+    border-radius: 10px;
+    padding: 20px; /* Añadir un poco de espacio alrededor del contenido */
+    display: flex; /* Usar flexbox para alinear los elementos hijos */
+    flex-direction: column; /* Dirección de los elementos (vertical) */
+    align-items: center; /* Centrar los elementos en el eje horizontal */
+}
+
+/* Estilo para el contenedor de lista y lienzo */
+.container-flex {
+    display: flex; /* Usar flexbox para alinear la lista y el canvas horizontalmente */
+    justify-content: space-between; /* Espacio entre los elementos */
+    width: 100%; /* Ancho completo */
+    margin-bottom: 20px; /* Espacio debajo del contenedor */
+}
+
+/* Estilo para la lista de clases */
+.class-list {
+    margin-right: 20px; /* Espacio entre la lista y el canvas */
+}
+
+/* Estilo para el lienzo */
+#canvas-container {
+    display: flex; /* Flexbox para el contenedor del canvas */
+    flex-direction: column; /* Elementos en columna */
+    align-items: center; /* Centrar el contenido */
+    background: #fff;
+	border: 2px solid #fff; /* Borde blanco de 2 píxeles */
+}
+
+/* Estilo de los botones */
+.btn {
+    margin: 5px; /* Espacio entre botones */
+}
+
+/* Estilo para la tabla */
+table {
+    margin-top: 20px; /* Espacio arriba de la tabla */
+    width: 100%; /* Ancho completo */
+    border-collapse: separate; /* Evita el colapso de bordes */
+}
+
+.resultado {
+    font-weight: bold; /* Texto en negrita */
+    text-align: center; /* Alinear el texto al centro */
+    padding: 10px; /* Espacio alrededor del texto */
+}
+
+/* Estilo para el footer */
+.bg-dark {
+    padding: 20px; /* Espacio dentro del footer */
+    margin-top: 20px; /* Espacio arriba del footer */
+    color: white; /* Asegura que el texto en el footer sea blanco */
+}
+
+/* Color de texto blanco para encabezados, párrafos y otros elementos específicos */
+h1, h5, p, li, table th, table td {
+    color: white; /* Cambiar el color a blanco para los elementos seleccionados */
+}
+
+th {
+    background: #573b8a; /* Fondo morado para el encabezado */
+    border: 2px solid #fff; /* Borde blanco de 2 píxeles */
+    padding: 10px; /* Espacio interno para el encabezado */
+    text-align: center; /* Centrar el texto en el encabezado */
+}
