@@ -331,7 +331,7 @@
             ],
             "weights": [
                 {
-                    "name": "sequential/conv2d/kernel",
+                    "name": "conv2d/kernel",
                     "shape": [
                         3,
                         3,
@@ -341,14 +341,14 @@
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/conv2d/bias",
+                    "name": "conv2d/bias",
                     "shape": [
                         32
                     ],
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/conv2d_1/kernel",
+                    "name": "conv2d_1/kernel",
                     "shape": [
                         3,
                         3,
@@ -358,14 +358,14 @@
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/conv2d_1/bias",
+                    "name": "conv2d_1/bias",
                     "shape": [
                         64
                     ],
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/dense/kernel",
+                    "name": "dense/kernel",
                     "shape": [
                         2304,
                         100
@@ -373,14 +373,14 @@
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/dense/bias",
+                    "name": "dense/bias",
                     "shape": [
                         100
                     ],
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/dense_1/kernel",
+                    "name": "dense_1/kernel",
                     "shape": [
                         100,
                         10
@@ -388,7 +388,7 @@
                     "dtype": "float32"
                 },
                 {
-                    "name": "sequential/dense_1/bias",
+                    "name": "dense_1/bias",
                     "shape": [
                         10
                     ],
